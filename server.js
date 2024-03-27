@@ -34,7 +34,7 @@ app.use(passport.session());
 
 
 app.get('/auth/login', function(req, res){
-  res.render('login', { user: req.user });
+  res.render('login', { user: req.name });
 });
 
 
@@ -49,19 +49,16 @@ app.get('/auth/github/callback',
 passport.authenticate('github', { failureRedirect: 'auth/login' }),
   function(req, res) {
     req.session.username = req.user.username;
+    req.session.displayname = req.user.displayName;
     res.redirect('/dashboard');
 });
+
 app.get('/dashboard', function(req, res){
-  res.render('dashboard', { name: req.session.user });
+  if (req.session.username == null) {
+    res.redirect('/dashboard1');
+  } else 
+  res.render('dashboard', { user: { name: req.session.displayname } });
 });
-
-
-
-
-
-
-
-
 
 app.use((req, res, next) => {
   console.log(`User details are: `);
